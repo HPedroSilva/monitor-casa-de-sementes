@@ -21,6 +21,11 @@ router.post('/insert', async (req, res) => {
     }
 })
 
+router.get('/test', async (req, res) => {
+    console.log(req.body);
+    res.json(req.body);
+})
+
 router.get('/all', async (req, res) => {
     try{
         const leituras = await Leitura.find();

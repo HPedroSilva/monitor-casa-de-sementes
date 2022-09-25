@@ -1,15 +1,17 @@
 //INCLUSÃO DAS BIBLIOTECAS
 #include <dht.h>
+#include <ArduinoJson.h>
 
 //DEFINIÇÃO DE PINOS
 #define pinSensor 7
 
 //INTERVALO DE LEITURA
-#define intervalo 30000
+#define intervalo 2000
 
 //CRIANDO VARIAVEIS E INSTANCIANDO OBJETOS
 unsigned long delayIntervalo;
 dht sensorDHT;
+StaticJsonDocument<200> doc;
 
 void setup()
 {
@@ -18,9 +20,9 @@ void setup()
 }
 
 void loop()
-{
-
+{ 
     if ( (millis() - delayIntervalo) > intervalo ) {
+      doc.clear();
       //LEITURA DOS DADOS
       unsigned long start = micros();
       int chk = sensorDHT.read22(pinSensor);
@@ -28,33 +30,34 @@ void loop()
 
       switch (chk)
       {
-      case DHTLIB_OK:
-          Serial.print("OK,\t");
+        case DHTLIB_OK:
+					doc["erro"] = "";
+					doc["sensorId"] = 1;
+					doc["umidade"] = sensorDHT.humidity;
+					doc["temperatura"] = sensorDHT.temperature;
           break;
-      case DHTLIB_ERROR_CHECKSUM:
-          Serial.print("Checksum error,\t");
+        case DHTLIB_ERROR_CHECKSUM:
+          doc["erro"] = "Checksum error";
           break;
-      case DHTLIB_ERROR_TIMEOUT:
-          Serial.print("Time out error,\t");
+        case DHTLIB_ERROR_TIMEOUT:
+          doc["erro"] = "Time out error";
           break;
-      case DHTLIB_ERROR_CONNECT:
-          Serial.print("Connect error,\t");
+        case DHTLIB_ERROR_CONNECT:
+          doc["erro"] = "Connect error";
           break;
-      case DHTLIB_ERROR_ACK_L:
-          Serial.print("Ack Low error,\t");
+        case DHTLIB_ERROR_ACK_L:
+          doc["erro"] = "Ack Low error";
           break;
-      case DHTLIB_ERROR_ACK_H:
-          Serial.print("Ack High error,\t");
+        case DHTLIB_ERROR_ACK_H:
+          doc["erro"] = "Ack High error";
           break;
-      default:
-          Serial.print("Unknown error,\t");
+        default:
+          doc["erro"] = "Unknown error";
           break;
       }
-    
-      // EXIBINDO DADOS LIDOS
-      Serial.print(sensorDHT.humidity, 1 /*FORMATAÇÃO PARA UMA CASA DECIMAL*/);
-      Serial.print(",\t\t");
-      Serial.println(sensorDHT.temperature, 1 /*FORMATAÇÃO PARA UMA CASA DECIMAL*/);
+  
+      serializeJson(doc, Serial);
+      Serial.println();
   
       delayIntervalo = millis();
     };
