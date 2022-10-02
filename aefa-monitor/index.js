@@ -51,17 +51,33 @@ process.on('SIGINT', function() {
 }); 
 
 async function sendToCloud() {
-    // Consultar todos os dados não enviados
-    // Enviar dados via post
-    //const response = await cloud.get("last");
-    //console.log(response.data);
-    try{
-        const leitura = await Leitura.findOne().sort({data: -1});
-        console.log(leitura);
-        const response1 = await cloud.post("cloud-insert", leitura);
-        console.log(response1);
+    console.log(("#".repeat(40) + "\n").repeat(3));
+    try {
+        const notCloudSaved = await Leitura.find({cloudSaved: false});
+        for(var leitura of notCloudSaved) {
+            console.log(leitura);
+            try {
+                const response = await cloud.post("cloud-insert", leitura);
+                console.log(response.data.statusLeitura);
+                if(response.data.statusLeitura == 'saved' || response.data.statusLeitura == 'updated') {
+                    try {
+                            console.log("Entrou");
+                            leitura.cloudSaved = true;
+                            await leitura.save();
+                        }
+                        catch(error) {
+                            console.log("Erro ao atualizar localmente leitura salva em cloud");
+                            console.log(error.message);
+                        }
+                }
+            }
+            catch(error) {
+                console.log("Erro no envio da leitura para cloud.");
+                console.log(error.message);
+            }
+        }
     }
-    catch(error){
+    catch(error) {
         console.log(error.message);
     }
 }

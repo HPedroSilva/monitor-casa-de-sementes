@@ -5,7 +5,6 @@ const Leitura = require('../model/leitura');
 module.exports = router;
 
 router.post('/insert', async (req, res) => {
-    console.log(req.body);
     const leitura = new Leitura({
         temperatura: req.body.temperatura,
         umidade: req.body.umidade,
@@ -28,7 +27,7 @@ router.post('/cloud-insert', async (req, res) => {
         temperatura: req.body.temperatura,
         umidade: req.body.umidade,
         data: req.body.data,
-        cloudSaved: req.body.cloudSaved,
+        cloudSaved: true,
         __v: req.body.__v
     });
     const leiturasSalvas = await Leitura.find({_id: leitura._id});
@@ -53,7 +52,6 @@ router.post('/cloud-insert', async (req, res) => {
 })
 
 router.post('/test', async (req, res) => {
-    console.log(req.body);
     res.json(req.body);
 })
 
