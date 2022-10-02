@@ -12,6 +12,10 @@ const dataSchema = new mongoose.Schema({
     data: {
         required: true,
         type: Date
+    },
+    cloudSaved: {
+        required: true,
+        type: Boolean
     }
 })
 

@@ -9,8 +9,10 @@ const mongoString = process.env.DATABASE_URL
 const serverType = process.env.SERVER_TYPE
 const refreshRate = process.env.CLOUD_REFRESH_RATE
 
+const Leitura = require('./model/leitura');
+
 const cloud = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "http://localhost:3001",
 });
 
 mongoose.connect(mongoString);
@@ -51,8 +53,15 @@ process.on('SIGINT', function() {
 async function sendToCloud() {
     // Consultar todos os dados não enviados
     // Enviar dados via post
-    const response = await cloud.get("last");
-    console.log(response.data);
-    const response1 = await cloud.post("cloud-insert", response);
-    console.log(response1.data);
+    //const response = await cloud.get("last");
+    //console.log(response.data);
+    try{
+        const leitura = await Leitura.findOne().sort({data: -1});
+        console.log(leitura);
+        const response1 = await cloud.post("cloud-insert", leitura);
+        console.log(response1);
+    }
+    catch(error){
+        console.log(error.message);
+    }
 }
