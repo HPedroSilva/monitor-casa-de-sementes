@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Leitura = require('../model/leitura');
+const sendToCloud = require('../sendToCloud');
 
 module.exports = router;
 
@@ -15,8 +16,8 @@ router.post('/insert', async (req, res) => {
     try {
         const dataToSave = await leitura.save();
         res.status(200).json(dataToSave);
-    }
-    catch (error) {
+        sendToCloud();
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 })
