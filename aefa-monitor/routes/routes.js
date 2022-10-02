@@ -21,7 +21,26 @@ router.post('/insert', async (req, res) => {
     }
 })
 
-router.get('/test', async (req, res) => {
+router.post('/cloud-insert', async (req, res) => {
+    console.log(req.body);
+    const leitura = new Leitura({
+        _id: req.body._id,
+        temperatura: req.body.temperatura,
+        umidade: req.body.umidade,
+        data: req.body.data,
+        __v: req.body.__v
+    })
+
+    try {
+        const dataToSave = await leitura.save();
+        res.status(200).json(dataToSave)
+    }
+    catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
+router.post('/test', async (req, res) => {
     console.log(req.body);
     res.json(req.body);
 })
