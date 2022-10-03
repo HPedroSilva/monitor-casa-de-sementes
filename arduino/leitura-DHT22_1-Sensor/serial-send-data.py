@@ -2,11 +2,16 @@ import requests
 import json
 import serial
 
-ser = serial.Serial("COM5")
-
-while 1:
-    a = ser.readline().decode()
-    data = json.loads(a)
-    requisicao = requests.get("http://localhost:3000/test", json=data)
-
-ser.close()
+try:
+    ser = serial.Serial("COM5")
+except Exception as e:
+    print(f'Erro ao conectar a porta serial: {e}')
+else:
+    while 1:
+        a = ser.readline().decode()
+        data = json.loads(a)
+        try:
+            res = requests.post("http://localhost:3000/insert", json=data)
+        except Exception as e:
+            print(f'Erro na requisição HTTP: {e}')
+    ser.close()
