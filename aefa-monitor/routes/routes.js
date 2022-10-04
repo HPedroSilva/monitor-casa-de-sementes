@@ -10,7 +10,7 @@ router.post('/insert', async (req, res) => {
     var leitura = null;
     if(erro == '') {
         leitura = new Leitura({
-            erro: erro,
+            erro: 'OK',
             temperatura: req.body.temperatura,
             umidade: req.body.umidade,
             data: new Date(),
