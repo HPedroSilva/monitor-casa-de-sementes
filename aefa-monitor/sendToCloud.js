@@ -4,9 +4,10 @@ const axios = require('axios');
 const Leitura = require('./model/leitura');
 
 const serverType = process.env.SERVER_TYPE
+const cloudUrl = process.env.CLOUD_URL
 
 const cloud = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: cloudUrl,
 });
 
 async function sendToCloud() {

@@ -6,12 +6,25 @@ const sendToCloud = require('../sendToCloud');
 module.exports = router;
 
 router.post('/insert', async (req, res) => {
-    const leitura = new Leitura({
-        temperatura: req.body.temperatura,
-        umidade: req.body.umidade,
-        data: new Date(),
-        cloudSaved: false
-    });
+    const erro = req.body.erro;
+    var leitura = null;
+    if(erro == '') {
+        leitura = new Leitura({
+            erro: erro,
+            temperatura: req.body.temperatura,
+            umidade: req.body.umidade,
+            data: new Date(),
+            cloudSaved: false
+        });
+    } else {
+        leitura = new Leitura({
+            erro: erro,
+            temperatura: 0,
+            umidade: 0,
+            data: new Date(),
+            cloudSaved: false
+        });
+    }
 
     try {
         const dataToSave = await leitura.save();

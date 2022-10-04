@@ -6,7 +6,7 @@
 #define pinSensor 7
 
 //INTERVALO DE LEITURA
-#define intervalo 2000
+#define intervalo 30000
 
 //CRIANDO VARIAVEIS E INSTANCIANDO OBJETOS
 unsigned long delayIntervalo;

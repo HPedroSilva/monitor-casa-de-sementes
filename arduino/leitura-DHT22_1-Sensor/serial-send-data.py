@@ -10,6 +10,7 @@ else:
     while 1:
         a = ser.readline().decode()
         data = json.loads(a)
+        print(data)
         try:
             res = requests.post("http://localhost:3000/insert", json=data)
         except Exception as e:
