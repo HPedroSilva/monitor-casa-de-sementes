@@ -6,34 +6,46 @@ const sendToCloud = require('../sendToCloud');
 module.exports = router;
 
 router.post('/insert', async (req, res) => {
-    const erro = req.body.erro;
-    var leitura = null;
-    if(erro == '') {
-        leitura = new Leitura({
-            erro: 'OK',
-            temperatura: req.body.temperatura,
-            umidade: req.body.umidade,
-            data: new Date(),
-            cloudSaved: false
-        });
-    } else {
-        leitura = new Leitura({
-            erro: erro,
-            temperatura: 0,
-            umidade: 0,
-            data: new Date(),
-            cloudSaved: false
-        });
+    const leituras = req.body;
+    var response = [];
+    for(let leitura of leituras) {
+        const erro = leitura.erro;
+        let leitura_obj = null;
+        if(erro == 'OK') {
+            leitura_obj = new Leitura({
+                erro: 'OK',
+                sensorId: leitura.sensorId,
+                temperatura: leitura.temperatura,
+                umidade: leitura.umidade,
+                data: new Date(),
+                cloudSaved: false
+            });
+        } else {
+            leitura_obj = new Leitura({
+                erro: erro,
+                sensorId: leitura.sensorId,
+                temperatura: 0,
+                umidade: 0,
+                data: new Date(),
+                cloudSaved: true
+            });
+        }
+        
+        try {
+            const leituraSalva = await leitura_obj.save();
+            response.push(leituraSalva);
+        } catch (error) {
+            console.log("Erro ao salvar dados: " + leitura_obj);
+            console.log(error);
+        }
     }
-
     try {
-        const dataToSave = await leitura.save();
-        res.status(200).json(dataToSave);
+        res.status(200).json(response);
         sendToCloud();
     } catch (error) {
         res.status(400).json({message: error.message});
     }
-})
+});
 
 router.post('/cloud-insert', async (req, res) => {
     const leitura = new Leitura({

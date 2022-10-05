@@ -6,7 +6,7 @@
 #define pinSensor 7
 
 //INTERVALO DE LEITURA
-#define intervalo 30000
+#define intervalo 4000
 
 //CRIANDO VARIAVEIS E INSTANCIANDO OBJETOS
 unsigned long delayIntervalo;
@@ -28,11 +28,11 @@ void loop()
       int chk = sensorDHT.read22(pinSensor);
       unsigned long stop = micros();
 
+      doc["sensorId"] = 1;
       switch (chk)
       {
         case DHTLIB_OK:
-					doc["erro"] = "";
-					doc["sensorId"] = 1;
+					doc["erro"] = "OK";
 					doc["umidade"] = sensorDHT.humidity;
 					doc["temperatura"] = sensorDHT.temperature;
           break;

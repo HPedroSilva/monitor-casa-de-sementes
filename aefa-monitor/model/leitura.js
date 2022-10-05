@@ -5,6 +5,10 @@ const dataSchema = new mongoose.Schema({
         required: true,
         type: String
     },
+    sensorId: {
+        required: true,
+        type: Number
+    },
     temperatura: {
         required: true,
         type: Number
