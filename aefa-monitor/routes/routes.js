@@ -48,31 +48,42 @@ router.post('/insert', async (req, res) => {
 });
 
 router.post('/cloud-insert', async (req, res) => {
-    const leitura = new Leitura({
-        _id: req.body._id,
-        temperatura: req.body.temperatura,
-        umidade: req.body.umidade,
-        data: req.body.data,
+    const leitura = req.body;
+    const leitura_obj = new Leitura({
+        _id: leitura._id,
+        erro: leitura.erro,
+        sensorId: leitura.sensorId,
+        temperatura: leitura.temperatura,
+        umidade: leitura.umidade,
+        data: leitura.data,
         cloudSaved: true,
-        __v: req.body.__v
+        __v: leitura.__v
     });
-    const leiturasSalvas = await Leitura.find({_id: leitura._id});
-    
+
+    const leiturasSalvas = await Leitura.find({_id: leitura_obj._id});
     if (leiturasSalvas.length) {
         try {
-            const dataToSave = await leitura.updateOne();
-            res.status(200).json({_id: leitura.id, statusLeitura: 'updated'});
+            const leituraSalva = await leitura_obj.updateOne();
+            if(leituraSalva) {
+                res.status(200).json({_id: leitura_obj.id, statusLeitura: 'updated'});
+            } else {
+                res.status(400).json({_id: leitura_obj.id, statusLeitura: 'error'});
+            }
         }
         catch (error) {
-            res.status(400).json({_id: leitura.id, statusLeitura: 'error', message: error.message});
+            res.status(400).json({_id: leitura_obj.id, statusLeitura: 'error', message: error.message});
         }
     } else {
         try {
-            const dataToSave = await leitura.save();
-            res.status(200).json({_id: leitura.id, statusLeitura: 'saved'});
+            const leituraSalva = await leitura_obj.save();
+            if(leituraSalva) {
+                res.status(200).json({_id: leitura_obj.id, statusLeitura: 'saved'});
+            } else {
+                res.status(400).json({_id: leitura_obj.id, statusLeitura: 'error'});
+            }
         }
         catch (error) {
-            res.status(400).json({_id: leitura.id, statusLeitura: 'error', message: error.message});
+            res.status(400).json({_id: leitura_obj.id, statusLeitura: 'error', message: error.message});
         }
     }
 })
