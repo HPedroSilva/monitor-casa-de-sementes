@@ -27,7 +27,7 @@ router.post('/insert', async (req, res) => {
                 temperatura: 0,
                 umidade: 0,
                 data: new Date(),
-                cloudSaved: true
+                cloudSaved: false
             });
         }
         
