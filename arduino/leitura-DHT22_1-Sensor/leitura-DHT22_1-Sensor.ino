@@ -2,63 +2,66 @@
 #include <dht.h>
 #include <ArduinoJson.h>
 
-//DEFINIÇÃO DE PINOS
-#define pinSensor 7
-
 //INTERVALO DE LEITURA
 #define intervalo 4000
+//Quantidade de sensores conectados
+#define nSensores 2
+//Número dos pinos dos sensores (o id do sensor será o índice do sensor na lista + 1). Ex: o primeiro sensor na lista aparecerá no BD com o id 1.
+const int  sensorPins[] = {7, 8};
 
 //CRIANDO VARIAVEIS E INSTANCIANDO OBJETOS
+const int capacity = JSON_ARRAY_SIZE(nSensores) + nSensores * JSON_OBJECT_SIZE(4);
+StaticJsonDocument<capacity> doc;
 unsigned long delayIntervalo;
 dht sensorDHT;
-StaticJsonDocument<200> doc;
 
 void setup()
 {
-  // INICIANDO MONITOR SERIAL  
   Serial.begin(9600);
 }
 
 void loop()
-{ 
-    if ( (millis() - delayIntervalo) > intervalo ) {
-      doc.clear();
-      //LEITURA DOS DADOS
+{
+  if( (millis() - delayIntervalo) > intervalo ) {
+    doc.clear();
+    for(int i=0; i<nSensores; ++i){
+      JsonObject leitura = doc.createNestedObject();
+      int pinSensor = sensorPins[i];
+
       unsigned long start = micros();
       int chk = sensorDHT.read22(pinSensor);
       unsigned long stop = micros();
 
-      doc["sensorId"] = 1;
+      leitura["sensorId"] = i + 1;
       switch (chk)
       {
         case DHTLIB_OK:
-					doc["erro"] = "OK";
-					doc["umidade"] = sensorDHT.humidity;
-					doc["temperatura"] = sensorDHT.temperature;
+          leitura["erro"] = "OK";
+          leitura["umidade"] = sensorDHT.humidity;
+          leitura["temperatura"] = sensorDHT.temperature;
           break;
         case DHTLIB_ERROR_CHECKSUM:
-          doc["erro"] = "Checksum error";
+          leitura["erro"] = "Checksum error";
           break;
         case DHTLIB_ERROR_TIMEOUT:
-          doc["erro"] = "Time out error";
+          leitura["erro"] = "Time out error";
           break;
         case DHTLIB_ERROR_CONNECT:
-          doc["erro"] = "Connect error";
+          leitura["erro"] = "Connect error";
           break;
         case DHTLIB_ERROR_ACK_L:
-          doc["erro"] = "Ack Low error";
+          leitura["erro"] = "Ack Low error";
           break;
         case DHTLIB_ERROR_ACK_H:
-          doc["erro"] = "Ack High error";
+          leitura["erro"] = "Ack High error";
           break;
         default:
-          doc["erro"] = "Unknown error";
+          leitura["erro"] = "Unknown error";
           break;
       }
-  
-      serializeJson(doc, Serial);
-      Serial.println();
-  
-      delayIntervalo = millis();
-    };
+    }
+    serializeJson(doc, Serial);
+    Serial.println();
+    delayIntervalo = millis();
+  }
 }

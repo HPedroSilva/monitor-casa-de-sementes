@@ -103,11 +103,35 @@ router.get('/all', async (req, res) => {
 })
 
 router.get('/last', async (req, res) => {
-    try{
-        const leitura = await Leitura.findOne().sort({data: -1});
-        res.json(leitura);
-    }
-    catch(error){
-        res.status(500).json({message: error.message});
+    const stringSensores = req.query.sensores;
+    
+    if(stringSensores) {
+        var sensoresId = stringSensores.split(',');
+        sensoresId = sensoresId.map(Number);
+        var response = [];
+
+        for(let sensorId of sensoresId)
+        {
+            try{
+                const leitura = await Leitura.findOne({sensorId: sensorId}).sort({data: -1});
+                if(leitura) {
+                    response.push(leitura);
+                } else {
+                    response.push({sensorId: sensorId, erro: "Not found"});
+                }
+            }
+            catch(error){
+                response.push({sensorId: sensorId, erro: error.message});
+            }
+        }
+        res.status(200).json(response);
+    } else {
+        try{
+            const leitura = await Leitura.findOne().sort({data: -1});
+            res.json(leitura);
+        }
+        catch(error){
+            res.status(500).json({message: error.message});
+        }
     }
 })
