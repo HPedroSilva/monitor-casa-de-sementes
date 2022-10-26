@@ -105,10 +105,10 @@ router.get('/all', async (req, res) => {
 router.get('/last', async (req, res) => {
     const stringSensores = req.query.sensores;
     
+    var response = [];
     if(stringSensores) {
         var sensoresId = stringSensores.split(',');
         sensoresId = sensoresId.map(Number);
-        var response = [];
 
         for(let sensorId of sensoresId)
         {
@@ -128,10 +128,12 @@ router.get('/last', async (req, res) => {
     } else {
         try{
             const leitura = await Leitura.findOne().sort({data: -1});
-            res.json(leitura);
+            response.push(leitura);
+            res.json(response);
         }
         catch(error){
-            res.status(500).json({message: error.message});
+            response.push({message: error.message});
+            res.status(500).json(response);
         }
     }
 })
