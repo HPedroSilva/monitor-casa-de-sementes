@@ -104,6 +104,8 @@ router.get('/all', async (req, res) => {
 
 router.get('/last', async (req, res) => {
     const stringSensores = req.query.sensores;
+    let valor = parseInt(req.query.qtdLeituras);
+    const qtdLeituras = valor ? valor : 1;
     
     var response = [];
     if(stringSensores) {
@@ -113,9 +115,9 @@ router.get('/last', async (req, res) => {
         for(let sensorId of sensoresId)
         {
             try{
-                const leitura = await Leitura.findOne({sensorId: sensorId}).sort({data: -1});
+                const leitura = await Leitura.find({sensorId: sensorId}, null, {limit: qtdLeituras}).sort({data: -1});
                 if(leitura) {
-                    response.push(leitura);
+                    response.push(...leitura);
                 } else {
                     response.push({sensorId: sensorId, erro: "Not found"});
                 }
