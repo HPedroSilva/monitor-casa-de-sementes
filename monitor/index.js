@@ -28,8 +28,7 @@ database.once('connected', () => {
 database.on('disconnected', function () {  
     console.log('Mongoose default connection disconnected'); 
 });
-  
-// If the Node process ends, close the Mongoose connection 
+
 process.on('SIGINT', function() {  
     database.close(function () { 
         console.log('Mongoose default connection disconnected through app termination'); 

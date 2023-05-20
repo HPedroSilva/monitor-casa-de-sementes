@@ -1,21 +1,16 @@
-//INCLUSÃO DAS BIBLIOTECAS
 #include <dht.h>
 #include <ArduinoJson.h>
 
-//DEFINIÇÃO DE PINOS
 #define pinSensor 7
 
-//INTERVALO DE LEITURA
 #define intervalo 30000
 
-//CRIANDO VARIAVEIS E INSTANCIANDO OBJETOS
 unsigned long delayIntervalo;
 dht sensorDHT;
 StaticJsonDocument<200> doc;
 
 void setup()
 {
-  // INICIANDO MONITOR SERIAL  
   Serial.begin(9600);
 }
 
@@ -23,7 +18,6 @@ void loop()
 { 
     if ( (millis() - delayIntervalo) > intervalo ) {
       doc.clear();
-      //LEITURA DOS DADOS
       unsigned long start = micros();
       int chk = sensorDHT.read22(pinSensor);
       unsigned long stop = micros();
